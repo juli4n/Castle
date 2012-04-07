@@ -3,8 +3,8 @@ package blob
 import (
 	"crypto/sha1"
 	"encoding/base32"
+	"io/ioutil"
 	"os"
-  "io/ioutil"
 )
 
 // A simple implementation of BlobStorage that
@@ -16,8 +16,8 @@ type fileBasedBlobStorage struct {
 
 // A factory for fileBasedBlobStorage instances
 func NewFileBasedBlobStorage(basePath string) (BlobStorage, error) {
-  os.Mkdir(basePath, os.ModeDir | 0740)
-  return &fileBasedBlobStorage{basePath}, nil
+	os.Mkdir(basePath, os.ModeDir|0740)
+	return &fileBasedBlobStorage{basePath}, nil
 }
 
 func (self fileBasedBlobStorage) Put(content []byte) (id string, err error) {
@@ -28,14 +28,14 @@ func (self fileBasedBlobStorage) Put(content []byte) (id string, err error) {
 	if fileAlreadyExists(filename) {
 		return id, nil
 	}
-  if err = ioutil.WriteFile(self.basePath + "/" + id, content, 0640); err != nil {
-    return "", err
-  }
+	if err = ioutil.WriteFile(self.basePath+"/"+id, content, 0640); err != nil {
+		return "", err
+	}
 	return id, nil
 }
 
 func (self fileBasedBlobStorage) PutWithId(id string, content []byte) (err error) {
-  return ioutil.WriteFile(self.basePath +  "/" + id, content, 0640)
+	return ioutil.WriteFile(self.basePath+"/"+id, content, 0640)
 }
 
 func fileAlreadyExists(filename string) bool {

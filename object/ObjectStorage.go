@@ -2,11 +2,11 @@ package object
 
 import (
 	"bytes"
-	"encoding/gob"
-  "encoding/json"
-  "encoding/xml"
 	"castle/blob"
-  "io"
+	"encoding/gob"
+	"encoding/json"
+	"encoding/xml"
+	"io"
 )
 
 type ObjectStorage interface {
@@ -15,47 +15,47 @@ type ObjectStorage interface {
 }
 
 type Encoder interface {
-  Encode(interface{}) error
+	Encode(interface{}) error
 }
 
-type EncoderFactory func (io.Writer) Encoder
+type EncoderFactory func(io.Writer) Encoder
 
 type Decoder interface {
-  Decode(interface{}) error
+	Decode(interface{}) error
 }
 
-type DecoderFactory func (io.Reader) Decoder
+type DecoderFactory func(io.Reader) Decoder
 
 type delegateObjectStorage struct {
-	blobStorage blob.BlobStorage
-  encoderFactory EncoderFactory
-  decoderFactory DecoderFactory
+	blobStorage    blob.BlobStorage
+	encoderFactory EncoderFactory
+	decoderFactory DecoderFactory
 }
 
 func NewStorage(s blob.BlobStorage, enc EncoderFactory, dec DecoderFactory) ObjectStorage {
-  return &delegateObjectStorage{s, enc, dec}
+	return &delegateObjectStorage{s, enc, dec}
 }
 
 func NewGobStorage(s blob.BlobStorage) ObjectStorage {
 	return &delegateObjectStorage{s,
-      func(w io.Writer) Encoder { return gob.NewEncoder(w) },
-      func(r io.Reader) Decoder { return gob.NewDecoder(r) }}
+		func(w io.Writer) Encoder { return gob.NewEncoder(w) },
+		func(r io.Reader) Decoder { return gob.NewDecoder(r) }}
 }
 
 func NewXMLStorage(s blob.BlobStorage) ObjectStorage {
 	return &delegateObjectStorage{s,
-      func(w io.Writer) Encoder { return xml.NewEncoder(w) },
-      func(r io.Reader) Decoder { return xml.NewDecoder(r) }}
+		func(w io.Writer) Encoder { return xml.NewEncoder(w) },
+		func(r io.Reader) Decoder { return xml.NewDecoder(r) }}
 }
 
 func NewJSONStorage(s blob.BlobStorage) ObjectStorage {
 	return &delegateObjectStorage{s,
-      func(w io.Writer) Encoder { return json.NewEncoder(w) },
-      func(r io.Reader) Decoder { return json.NewDecoder(r) }}
+		func(w io.Writer) Encoder { return json.NewEncoder(w) },
+		func(r io.Reader) Decoder { return json.NewDecoder(r) }}
 }
 
 func (self *delegateObjectStorage) Put(value interface{}) (objRef string, err error) {
-  buffer := &bytes.Buffer{}
+	buffer := &bytes.Buffer{}
 	encoder := self.encoderFactory(buffer)
 	if err := encoder.Encode(value); err != nil {
 		return "", err

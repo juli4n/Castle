@@ -1,11 +1,9 @@
 package blob
 
 type Batchable interface {
+	Start()
 
-  Start()
-
-  End()
-
+	End()
 }
 
 // An interface for content addressable blob storages
@@ -15,7 +13,7 @@ type BlobStorage interface {
 	// the id of the new blob.
 	Put(content []byte) (string, error)
 
-  PutWithId(id string, content []byte) error
+	PutWithId(id string, content []byte) error
 
 	// Returns a stored blob for a given id or error
 	// if it doesn't exists.
