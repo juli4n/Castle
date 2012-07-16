@@ -16,6 +16,16 @@ type Tree struct {
 	Childs []TreeNode
 }
 
+func (self *Tree) FindChildNode(name string) *TreeNode {
+  for i := range self.Childs {
+    child := self.Childs[i]
+    if name == child.Name {
+      return &child
+    }
+  }
+  return nil
+}
+
 // 
 type TreeNode struct {
 	// The name of the child.
